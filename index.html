@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}[hidden]{display:none!important}</style>
+<title>Asistente HIS Materno</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: columna única tipo app móvil (como el algoritmo SR), tarjetas desplegables; en escritorio, formulario y resultado lado a lado. */
+:root{
+  --bg:#f5f8fc; --card:#ffffff; --ink:#17314f; --muted:#5f6f84; --edge:rgba(110,140,180,.22);
+  --inicio:#ead8ff; --decision:#d8ecff; --accion:#bff1f2; --criterio:#dcf8cf;
+  --final:#d8f8c8; --descartado:#ffdada; --fuente:#fff1cc; --vacuna:#ffe1ef;
+  --blue:#2563eb; --blue-ink:#ffffff; --green:#16a34a; --red:#c92a2a; --amber:#a16207;
+  --box-blue:#eff6ff; --box-green:#effce8; --box-yellow:#fff8db; --box-red:#fff1f1;
+  --line-blue:#60a5fa; --line-green:#22c55e; --line-yellow:#facc15; --line-red:#ef4444;
+  --input:#f8fbff; --chip:#ffffff;
+  --shadow:0 8px 22px rgba(25,45,75,.10);
+  --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1a28; --card:#16243a; --ink:#e3ecf7; --muted:#9fb0c6; --edge:rgba(150,180,220,.18);
+  --inicio:#3a2c57; --decision:#1d3a5c; --accion:#17474b; --criterio:#24452a;
+  --final:#24452a; --descartado:#5a2a2e; --fuente:#4d4120; --vacuna:#52293d;
+  --blue:#4c8dff; --blue-ink:#08162b; --green:#3fca75; --red:#ff8a8a; --amber:#f2c14e;
+  --box-blue:#172f4d; --box-green:#183722; --box-yellow:#3b3318; --box-red:#41201f;
+  --line-blue:#4c8dff; --line-green:#3fca75; --line-yellow:#e2b93b; --line-red:#f06b6b;
+  --input:#0f1c2e; --chip:#1c2d47; --shadow:0 8px 22px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1a28; --card:#16243a; --ink:#e3ecf7; --muted:#9fb0c6; --edge:rgba(150,180,220,.18);
+  --inicio:#3a2c57; --decision:#1d3a5c; --accion:#17474b; --criterio:#24452a;
+  --final:#24452a; --descartado:#5a2a2e; --fuente:#4d4120; --vacuna:#52293d;
+  --blue:#4c8dff; --blue-ink:#08162b; --green:#3fca75; --red:#ff8a8a; --amber:#f2c14e;
+  --box-blue:#172f4d; --box-green:#183722; --box-yellow:#3b3318; --box-red:#41201f;
+  --line-blue:#4c8dff; --line-green:#3fca75; --line-yellow:#e2b93b; --line-red:#f06b6b;
+  --input:#0f1c2e; --chip:#1c2d47; --shadow:0 8px 22px rgba(0,0,0,.35); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);font-size:15px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--edge);
+  padding-block:14px 10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto}
+h1{margin:0;font-size:1.22rem;line-height:1.2;letter-spacing:-.02em;text-wrap:balance}
+.author{margin:5px 0 0;font-size:.84rem;font-weight:750;opacity:.85}
+.tabs{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:2px}
+.tab{border:0;border-radius:999px;background:var(--card);color:var(--ink);font:inherit;font-weight:800;font-size:.86rem;padding:8px 14px;box-shadow:var(--shadow);cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--blue);color:var(--blue-ink)}
+.tab:focus-visible,.btn:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--line-blue);outline-offset:2px}
+main{padding-block:14px 30px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.grid{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+
+details{background:var(--card);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--edge)}
+summary{cursor:pointer;list-style:none;padding:13px 15px;font-weight:900;display:flex;align-items:center;gap:9px;line-height:1.25;background:var(--decision)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";margin-left:auto;min-width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--card) 75%,transparent);font-size:1.2rem}
+details[open]>summary::after{content:"−"}
+details.inicio>summary{background:var(--inicio)}
+details.accion>summary{background:var(--accion)}
+details.criterio>summary{background:var(--criterio)}
+details.fuente>summary{background:var(--fuente)}
+details.final>summary{background:var(--final)}
+.count{font-size:.78rem;font-weight:800;background:var(--card);border-radius:999px;padding:2px 9px}
+.body{padding:13px}
+
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px 10px}
+.form .full{grid-column:1/-1}
+.sub{grid-column:1/-1;margin:6px 0 0;font-size:.74rem;font-weight:850;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.8rem;font-weight:750;min-width:0}
+label.f span.h{font-weight:500;color:var(--muted);font-size:.74rem}
+input[type=date],input[type=number],input[type=search],select{font:inherit;font-size:.95rem;color:var(--ink);background:var(--input);border:1px solid var(--edge);border-radius:10px;padding:8px 9px;width:100%;min-width:0}
+.check{grid-column:1/-1;display:flex;gap:9px;align-items:flex-start;font-size:.86rem;line-height:1.35;cursor:pointer}
+.check input{width:18px;height:18px;margin:1px 0 0;accent-color:var(--blue);flex:none}
+
+.strip{display:flex;flex-wrap:wrap;gap:8px}
+.stat{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:8px 12px;box-shadow:var(--shadow);min-width:0}
+.stat b{display:block;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.stat.warn{background:var(--box-red);border-color:var(--line-red)}
+
+.rows{display:flex;flex-direction:column;gap:7px}
+.row{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:4px 10px;align-items:center;border-radius:12px;padding:9px 10px 9px 12px;background:var(--card);border:1px solid var(--edge);border-left:6px solid var(--decision)}
+.row .code{font-family:var(--mono);font-weight:800;font-size:.95rem;font-variant-numeric:tabular-nums}
+.row .name{font-weight:800;font-size:.9rem;line-height:1.25}
+.row .why{grid-column:2/-1;font-size:.78rem;color:var(--muted);line-height:1.35}
+.tags{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.tag{font-family:var(--mono);font-size:.78rem;font-weight:800;border-radius:7px;padding:2px 7px;background:var(--chip);border:1px solid var(--edge);white-space:nowrap}
+.tag.t{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.g-sup{border-left-color:var(--inicio)}.g-nut{border-left-color:var(--criterio)}.g-lab{border-left-color:var(--decision)}
+.g-supl{border-left-color:var(--accion)}.g-cons{border-left-color:var(--fuente)}.g-vac{border-left-color:var(--vacuna)}.g-dx{border-left-color:var(--descartado)}
+@media (max-width:520px){.row{grid-template-columns:76px minmax(0,1fr)}.tags{grid-column:2;justify-content:flex-start}}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.76rem;color:var(--muted);margin:2px 0 10px}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:3px;margin-right:4px;vertical-align:middle}
+
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.btn{border:0;border-radius:999px;font:inherit;font-weight:800;font-size:.86rem;padding:8px 14px;cursor:pointer;background:var(--blue);color:var(--blue-ink);box-shadow:var(--shadow)}
+.btn.soft{background:var(--card);color:var(--ink)}
+.note{font-size:.8rem;color:var(--muted)}
+textarea.copyfb{width:100%;min-height:120px;font-family:var(--mono);font-size:.8rem;background:var(--input);color:var(--ink);border:1px solid var(--edge);border-radius:10px;padding:8px}
+
+.box{border-radius:14px;padding:10px 12px;line-height:1.45;margin:0 0 9px;font-size:.88rem}
+.box:last-child{margin-bottom:0}
+.box.blue{background:var(--box-blue);border-left:5px solid var(--line-blue)}
+.box.green{background:var(--box-green);border-left:5px solid var(--line-green)}
+.box.yellow{background:var(--box-yellow);border-left:5px solid var(--line-yellow)}
+.box.red{background:var(--box-red);border-left:5px solid var(--line-red)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border-radius:999px;padding:6px 11px;font-size:.82rem;font-weight:750;background:var(--box-green);border:1px solid var(--line-green)}
+.chip.no{background:var(--box-red);border-color:var(--line-red)}
+ul{margin:6px 0 0 18px;padding:0}li{margin-bottom:4px}
+
+.search{position:sticky;top:calc(env(safe-area-inset-top,0px) + 108px);z-index:5;margin-bottom:12px}
+.codes{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.code-card{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:10px 12px;min-width:0}
+.code-card .c{font-family:var(--mono);font-weight:800}
+.code-card .d{font-weight:750;font-size:.88rem;margin-top:2px}
+.code-card .n{font-size:.78rem;color:var(--muted);margin-top:4px;line-height:1.35}
+.pill{display:inline-block;font-size:.7rem;font-weight:800;border-radius:999px;padding:1px 8px;margin-left:6px;background:var(--chip);border:1px solid var(--edge);vertical-align:middle}
+.prose{max-width:760px;display:flex;flex-direction:column;gap:12px}
+.prose h2{font-size:1.02rem;margin:0}
+.prose p{margin:0;line-height:1.5}
+.eess-info{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font-size:.76rem;font-weight:800;border-radius:999px;padding:3px 10px;border:1px solid var(--edge);background:var(--chip)}
+.badge.ok{background:var(--box-green);border-color:var(--line-green)}
+.badge.no{background:var(--box-red);border-color:var(--line-red)}
+.subhead{margin:16px 0 8px;font-size:.8rem;font-weight:850;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row.off{opacity:.72;border-style:dashed}
+.tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--shadow)}
+table.cfg{border-collapse:collapse;width:100%;min-width:760px;font-size:.86rem}
+table.cfg th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:10px;border-bottom:1px solid var(--edge);background:var(--decision)}
+table.cfg td{padding:8px 10px;border-bottom:1px solid var(--edge);font-variant-numeric:tabular-nums}
+table.cfg td.c{text-align:center}
+table.cfg input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue)}
+table.cfg input[type=number]{width:100px;padding:5px 7px}
+footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;line-height:1.45}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Asistente HIS · Atención prenatal</h1>
+    <p class="author">Prototipo para la M.R. Yerbabuena · Elaborado por Yhojar A. Pisfil-Farroñay MD Ms(c)</p>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="t-apn" aria-selected="true" data-v="apn">Atención prenatal</button>
+      <button class="tab" role="tab" id="t-mr" aria-selected="false" data-v="mr">Mi microred</button>
+      <button class="tab" role="tab" id="t-cod" aria-selected="false" data-v="cod">Buscar código</button>
+      <button class="tab" role="tab" id="t-reg" aria-selected="false" data-v="reg">Reglas y pendientes</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+<!-- ================= VISTA APN ================= -->
+<section id="v-apn">
+<div class="grid">
+  <div class="col">
+    <details class="inicio" open>
+      <summary>1. Datos de la atención</summary>
+      <div class="body">
+        <form class="form" id="frm" autocomplete="off">
+          <p class="sub">Dónde y quién</p>
+          <label class="f">Establecimiento<select id="f_eess"></select></label>
+          <label class="f">Quién atiende
+            <select id="f_perfil"><option value="obs">Obstetra</option><option value="med">Médico(a)</option><option value="enf">Enfermero(a)</option><option value="tec">Técnico(a) de salud</option></select></label>
+          <div class="full eess-info" id="eessInfo"></div>
+          <p class="sub">Gestación</p>
+          <label class="f">Fecha de atención<input type="date" id="f_fecha"></label>
+          <label class="f">FUR<input type="date" id="f_fur"></label>
+          <label class="f">EG por ecografía (sem)<span class="h">Si la llena, reemplaza a la FUR</span><input type="number" id="f_eco" min="4" max="42" inputmode="numeric"></label>
+          <label class="f">N.º de atención prenatal<input type="number" id="f_apn" min="1" max="15" value="5" inputmode="numeric"></label>
+          <label class="f">Edad de la gestante<input type="number" id="f_edad" min="10" max="55" value="24" inputmode="numeric"></label>
+          <label class="f">Código de supervisión
+            <select id="f_cod"><option value="Z359">Z359x · con factor de riesgo (como en guías de la red)</option><option value="Z349">Z349x · embarazo normal (manual 2023)</option></select></label>
+
+          <p class="sub">Laboratorio y suplementos</p>
+          <label class="f full">Tamizaje de laboratorio en esta atención
+            <select id="f_tam"><option value="auto">Automático según semanas</option><option value="0">No corresponde hoy</option><option value="1">1.er tamizaje</option><option value="2">2.º tamizaje</option><option value="3">3.er tamizaje</option></select></label>
+          <label class="f">N.º entrega hierro / ácido fólico<span class="h">Correlativo (1, 2, 3…)</span><input type="number" id="f_sup" min="1" max="12" value="4" inputmode="numeric"></label>
+          <label class="f">N.º entrega calcio<span class="h">Desde las 20 sem</span><input type="number" id="f_cal" min="1" max="12" value="2" inputmode="numeric"></label>
+
+          <p class="sub">Nutrición</p>
+          <label class="f">Peso pregestacional (kg)<input type="number" id="f_pp" step="0.1" value="52" inputmode="decimal"></label>
+          <label class="f">Talla (cm)<input type="number" id="f_talla" step="0.1" value="152" inputmode="decimal"></label>
+          <label class="f">Peso actual (kg)<input type="number" id="f_peso" step="0.1" value="58.5" inputmode="decimal"></label>
+
+          <p class="sub">Anemia</p>
+          <label class="f">Hb observada (g/dL)<input type="number" id="f_hb" step="0.1" value="11.6" inputmode="decimal"></label>
+          <label class="f">Altitud de residencia (msnm)<input type="number" id="f_alt" step="1" value="2335" inputmode="numeric"></label>
+          <label class="f full">Ajuste de Hb a disminuir (g/dL)<span class="h">Se llena según el establecimiento (memorándum de la M.R.). Si la gestante vive a otra altitud, corríjalo</span><input type="number" id="f_fac" step="0.1" inputmode="decimal"></label>
+          <label class="check"><input type="checkbox" id="f_anprev"> La anemia ya fue diagnosticada en una atención anterior</label>
+
+          <p class="sub">Hallazgos de hoy</p>
+          <label class="check"><input type="checkbox" id="f_viol"> Tamizaje de violencia positivo o sospecha</label>
+          <label class="check"><input type="checkbox" id="f_itu"> Bacteriuria positiva (tira reactiva)</label>
+          <label class="check"><input type="checkbox" id="f_dtpa"> Ya recibió dTpa en esta gestación</label>
+          <label class="check"><input type="checkbox" id="f_pap"> Se tomó PAP y se hizo examen de mamas</label>
+        </form>
+      </div>
+    </details>
+    <p class="note">Ejemplo cargado: gestante de 24 años en su 5.ª atención. Cambie el establecimiento o «Quién atiende» para ver cómo cambia el registro. La app no guarda nombres ni datos: todo se borra al cerrar.</p>
+  </div>
+
+  <div class="col">
+    <div class="strip" id="strip"></div>
+
+    <details class="accion" open>
+      <summary>2. Registro HIS sugerido <span class="count" id="nrows"></span></summary>
+      <div class="body">
+        <div class="actions">
+          <button class="btn" type="button" id="btnCopy">Copiar lista</button>
+          <span class="note" id="copyMsg" role="status"></span>
+        </div>
+        <textarea class="copyfb" id="copyFb" hidden readonly></textarea>
+        <div class="legend">
+          <span><i style="background:var(--inicio)"></i>Supervisión</span><span><i style="background:var(--criterio)"></i>Nutrición</span>
+          <span><i style="background:var(--decision)"></i>Laboratorio</span><span><i style="background:var(--accion)"></i>Suplementos</span>
+          <span><i style="background:var(--fuente)"></i>Consejería</span><span><i style="background:var(--vacuna)"></i>Vacuna</span><span><i style="background:var(--descartado)"></i>Diagnóstico</span>
+        </div>
+        <div class="rows" id="rows"></div>
+        <div id="rowsProf"></div>
+        <div id="rowsLab"></div>
+      </div>
+    </details>
+
+    <details class="fuente" open>
+      <summary>3. Alertas y validaciones <span class="count" id="nalerts"></span></summary>
+      <div class="body" id="alerts"></div>
+    </details>
+
+    <details class="criterio" open>
+      <summary>4. Indicadores ESARE que alimenta</summary>
+      <div class="body"><div class="chips" id="inds"></div></div>
+    </details>
+
+    <details class="final">
+      <summary>5. Pendientes fuera de este registro</summary>
+      <div class="body" id="pend"></div>
+    </details>
+  </div>
+</div>
+</section>
+
+<!-- ================= VISTA MICRORED ================= -->
+<section id="v-mr" hidden>
+  <div class="prose" style="max-width:none">
+    <div class="box blue">Marque qué tiene cada establecimiento. La app usa esto para decidir qué se registra en el establecimiento, qué se refiere a laboratorio y a quién se refiere la atención prenatal. Se guarda solo en este equipo.</div>
+    <div class="box green">Cargado con los recursos que informó la jefatura y las altitudes y ajustes de Hb del Memorándum Múltiple N.º 012-2025: laboratorio en Yerbabuena, Jalca Grande y Duraznopampa; profesionales en esos tres, Montevideo (obstetra) y Quillunya (médico SERUMS); el resto, técnicos de enfermería. Si cambia el personal, actualícelo aquí.</div>
+    <div class="tablewrap">
+      <table class="cfg">
+        <thead><tr><th>Establecimiento</th><th>Cat.</th><th>RENAES</th><th>Meta gest.</th><th>Laboratorio</th><th>Obstetra</th><th>Médico</th><th>Enfermera</th><th>Técnico</th><th>Altitud (msnm)</th><th>Ajuste Hb (g/dL)</th></tr></thead>
+        <tbody id="cfgBody"></tbody>
+      </table>
+    </div>
+    <div class="actions"><button class="btn soft" type="button" id="cfgReset">Restablecer ejemplo</button><span class="note" id="cfgMsg" role="status"></span></div>
+  </div>
+</section>
+
+<!-- ================= VISTA CÓDIGOS ================= -->
+<section id="v-cod" hidden>
+  <div class="search"><input type="search" id="q" placeholder="Buscar por código o nombre: hemoglobina, 99402, violencia…" aria-label="Buscar código"></div>
+  <div class="codes" id="codes"></div>
+</section>
+
+<!-- ================= VISTA REGLAS ================= -->
+<section id="v-reg" hidden>
+  <div class="prose">
+    <details class="fuente" open>
+      <summary>Decisiones que debe validar la coordinadora</summary>
+      <div class="body">
+        <div class="box yellow"><b>Z349x o Z359x.</b> El manual 2023 usa Z349x para embarazo normal y Z359x para embarazo con riesgo. Las guías de la red usan Z359x en todos los casos. Por defecto la app usa Z359x.</div>
+        <div class="box yellow"><b>Tamizaje de violencia.</b> La ficha 10 cuenta gestantes con 4 tamizajes, pero la guía HVCA registra el tamizaje solo en la 1.ª atención (y de nuevo si se detecta violencia). La app sigue la guía. Si la red quiere 4, hay que definir en qué atenciones.</div>
+        <div class="box yellow"><b>Puntos de corte de IMC.</b> La guía HVCA usa 19.8 / 26 / 29. La app usa los cortes OMS de IMC pregestacional (18.5 / 25 / 30). Los códigos de sobrepeso y obesidad se contradicen entre secciones de la guía HVCA.</div>
+        <div class="box yellow"><b>Tiempos de laboratorio.</b> La app pide la Hb en la 1.ª atención, entre las 25 y 28 semanas y entre las 37 y 40 (NTS 213). Coquito hace lo mismo; la guía HVCA dice "cada tres meses". El VIH, la sífilis y la hepatitis B van en los mismos momentos.</div>
+        <div class="box green"><b>Ajuste de Hb por altitud: resuelto.</b> Se usan la altitud y el ajuste de cada establecimiento del Memorándum Múltiple N.º 012-2025 de la M.R. Yerbabuena (NTS 213). Solo si el campo queda vacío, la app estima el ajuste con la fórmula OMS 2024. Queda por definir si se ajusta por la altitud del establecimiento o por la del centro poblado donde vive la gestante.</div>
+        <div class="box yellow"><b>Qué registra el personal técnico.</b> Propuesta de la app, por validar con la coordinadora y la NTS 105: el técnico registra Z359 como primer diagnóstico, más suplementos, tira reactiva (bacteriuria y proteinuria), Hb, consejería nutricional, de signos de alarma y de lactancia, y vacunas. La APN, el plan de parto, las pruebas de VIH con su consejería, el tamizaje de violencia, el PAP y el diagnóstico de anemia o ITU quedan para el profesional.</div>
+        <div class="box yellow"><b>Sin laboratorio.</b> La app asume que la Hb (hemoglobinómetro), la tira reactiva y las pruebas rápidas de VIH, sífilis y hepatitis B se hacen en cualquier establecimiento con insumos, y que solo la batería requiere laboratorio.</div>
+        <div class="box yellow"><b>Paquete básico del I trimestre (ficha 6).</b> La ficha no lo define. La app considera que lo cumple quien tiene, antes de las 14 semanas, Hb, VIH/sífilis, hepatitis B, bacteriuria y la 1.ª batería.</div>
+      </div>
+    </details>
+    <details class="decision" open>
+      <summary>Fuentes de las reglas</summary>
+      <div class="body">
+        <ul>
+          <li>Manual de Registro y Codificación HIS, Atención Materno Perinatal (MINSA/OGTI, 2023).</li>
+          <li>NTS N.º 105-MINSA/DGSP-V.01, Atención Integral de Salud Materna (RM 827-2013) y su modificatoria RM 159-2014.</li>
+          <li>NTS N.º 213-MINSA/DGIESP-2024, anemia (puntos de corte OMS 2024, ajuste por altitud, Hb en la gestante).</li>
+          <li>Guía HIS ESNMPN de la red (HVCA 2026) y guía HIS del EESS Coquito.</li>
+          <li>Fichas de indicadores de proceso ESARE 2026, RIS Chachapoyas.</li>
+          <li>Ganancia de peso: rangos IOM 2009, de referencia.</li>
+        </ul>
+      </div>
+    </details>
+    <div class="box blue">En la versión final las reglas se cargan desde un Excel que mantiene la coordinadora y que se convierte con un script de R. Esta vista mostrará la fecha de esa versión.</div>
+  </div>
+</section>
+
+</div>
+</main>
+<footer>Prototipo de apoyo al registro. No reemplaza el formato HIS ni el criterio clínico. Verifique con la oficina de estadística de su red.</footer>
+
+<!-- Establecimientos de la M.R. Yerbabuena (RENAES, nombre, meta de gestantes 2026 del archivo de metas físicas ESARE) -->
+<script type="application/json" id="eess">
+[["4904","Yerbabuena",81],["4905","Jalca Grande",26],["4906","Quillunya",8],["4907","Duraznopampa",5],
+ ["4908","Tacta",3],["4909","Montevideo",3],["4910","San Juan de Lopecancha",1],["4911","El Mango",5],
+ ["7069","Quelucas",1],["7070","Buiquil",5],["7280","Pengote",5],["7281","Cueyqueta",3],["25129","El Puente",4]]
+</script>
+
+<!-- Reglas y catálogo: en la versión final este bloque lo genera R a partir del Excel maestro -->
+<script type="application/json" id="catalogo">
+[
+["Z3491","Supervisión de embarazo normal, I trimestre","Manual 2023. LAB 1: n.º de APN"],
+["Z3492","Supervisión de embarazo normal, II trimestre",""],
+["Z3493","Supervisión de embarazo normal, III trimestre",""],
+["Z3591","Supervisión de embarazo con riesgo, I trimestre (≤13 sem)","Guías de la red la usan en todas las gestantes"],
+["Z3592","Supervisión de embarazo con riesgo, II trimestre (14–27 sem)",""],
+["Z3593","Supervisión de embarazo con riesgo, III trimestre (≥28 sem)","En la 6.ª APN la guía HVCA anota PC (gestante controlada)"],
+["Z359","Supervisión de embarazo, sin especificar trimestre","Primer diagnóstico cuando la actividad es fuera de la APN (eco, monitoreo, visita)"],
+["59401.06","Plan de parto","LAB 1 en la APN; 2 y 3 en visita domiciliaria; TA en puerperio si el parto fue institucional"],
+["99209.04","Evaluación nutricional antropométrica","1.ª APN"],
+["Z006","Peso normal / adecuada ganancia de peso","D la 1.ª vez desde las 14 sem, luego R"],
+["O25X","Desnutrición / delgadez en el embarazo","IMC pregestacional < 18.5"],
+["O261","Ganancia de peso menor a lo recomendado",""],
+["O260","Ganancia de peso mayor a lo recomendado",""],
+["E663","Sobrepeso","Verificar: la guía HVCA usa E66.0 / E66.9 de forma contradictoria"],
+["E669","Obesidad","Verificar con estadística"],
+["96150.01","Tamizaje de salud mental: violencia","1.ª APN; se repite si se detecta violencia"],
+["R456","Problemas relacionados con la violencia","Con el tamizaje, si es sospecha o positivo"],
+["99402.09","Consejería en prevención de riesgos en salud mental",""],
+["99199.18","Suplementación con ácido fólico","Hasta las 13 sem. LAB: n.º de entrega"],
+["99199.26","Suplementación con sulfato ferroso + ácido fólico","Desde las 14 sem; también tratamiento de anemia. LAB 1–6, TA al terminar"],
+["59401.05","Suplementación con calcio","Desde las 20 sem. LAB: n.º de entrega"],
+["99403.01","Consejería nutricional: alimentación saludable","Todas las APN"],
+["99402.01","Consejería en signos de alarma","Todas las APN. LAB: correlativo"],
+["99402.03","Consejería en salud sexual y reproductiva","1.ª APN"],
+["99401.02","Consejería en lactancia materna","1.ª: 25–27 sem; 2.ª: 28–36; 3.ª: 37–40; 4.ª puerperio inmediato; 5.ª 1.er control de puerperio"],
+["81000.02","Tamizaje de bacteriuria asintomática (tira reactiva)","Todas las APN. LAB RN / RP"],
+["81007","Bacteriuria, excepto cultivo o tira","Alternativa del manual; Coquito la usa"],
+["82044","Tamizaje de proteinuria (albúmina en orina)","Desde las 20 sem, incluye trabajo de parto"],
+["99401.33","Consejería pre test VIH","LAB = n.º de tamizaje (1, 2, 3)"],
+["99401.34","Consejería post test VIH","LAB = n.º de tamizaje"],
+["86318.01","Prueba rápida dual VIH / sífilis","Dos LAB: RN o RP para cada prueba"],
+["87342","Prueba rápida hepatitis B (HBsAg)","LAB RN / RP"],
+["99402.05","Consejería en ITS, VIH y hepatitis B","LAB = n.º de tamizaje"],
+["85018","Dosaje de hemoglobina","1.ª APN, 25–28 sem, 37–40 sem; puérpera a los 30 días"],
+["85018.01","Dosaje de hemoglobina con hemoglobinómetro","Registrar Hb observada; la ajustada va en la historia"],
+["80055.01","Perfil obstétrico, 1.ª batería","Solo si se completó todo el paquete"],
+["80055.02","Perfil obstétrico, 2.ª batería","Guía HVCA: entre 31 y 34 sem"],
+["88141","Toma de muestra de PAP",""],
+["99386.03","Examen clínico de mamas","LAB N / A"],
+["99402.08","Consejería integral en cáncer","Solo en el 1.er tamizaje"],
+["Z0142","Examen pélvico","LAB N / A"],
+["O990","Anemia que complica el embarazo, parto o puerperio","LAB LEV / MOD / SEV; PR recuperada"],
+["D509","Anemia por deficiencia de hierro, no especificada",""],
+["O234","Infección urinaria en el embarazo",""],
+["99199.11","Administración de tratamiento",""],
+["76817","Ecografía obstétrica","Con Z359 como primer diagnóstico"],
+["59025","Test no estresante",""],
+["59020","Test estresante",""],
+["99412.01","Estimulación prenatal","Sesiones 1–6"],
+["99412.02","Psicoprofilaxis obstétrica","Sesiones 1–6"],
+["90715","Vacuna dTpa","Desde las 20 sem. LAB G"],
+["90714","Vacuna dT","LAB G"],
+["90746","Vacuna hepatitis B","LAB G"],
+["90658","Vacuna influenza","LAB G (también 90688)"],
+["C0011","Visita familiar integral",""],
+["99501","Visita domiciliaria postnatal","1.ª en los primeros 7 días; 2.ª entre 15 y 30 días"],
+["Z392","Seguimiento postparto de rutina",""],
+["59430","Atención de puerperio","LAB 1, 2"],
+["84590","Administración de vitamina A","1.er control de puerperio (guía HVCA)"],
+["59410","Atención de parto vaginal incluyendo postparto","R"],
+["O8000","Atención de parto vertical",""],
+["O8001","Atención de parto horizontal",""],
+["Z370","Nacido vivo único",""],
+["Z381","Nacido fuera del hospital, único","Parto domiciliario o en trayecto"],
+["Z390","Atención de parto domiciliario","LAB AE / FAM / PAR / OTR"],
+["Z0273","Expedición de certificado de nacimiento",""],
+["99208","Atención en planificación familiar y SSR",""],
+["99402.04","Consejería en planificación familiar",""],
+["99499.10","Telemonitoreo",""],
+["99401.24","Consejería en higiene de manos",""],
+["99401.19","Consejería para el autocuidado",""]
+]
+</script>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const DAY = 86400000;
+
+  /* ---------- utilidades ---------- */
+  const num = id => { const v = parseFloat($(id).value); return isNaN(v) ? null : v; };
+  const fmtDate = d => d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'});
+  const iso = d => new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  const parse = v => v ? new Date(v+'T12:00:00') : null;
+
+  /* ---------- configuración de la microred (se guarda en este equipo) ---------- */
+  const EESS = JSON.parse($('eess').textContent);
+  const KEY = 'his-mr-yerbabuena-v3';
+  // Recursos informados por la jefatura de la M.R. (nov. 2026)
+  const BASE = {
+    '4904':{cat:'I-3',lab:true,obs:true,med:true,enf:true,tec:false,nota:'2 médicos, 2 obstetras, 1 enfermera; laboratorio con técnico'},
+    '4905':{cat:'I-3',lab:true,obs:true,med:true,enf:true,tec:false,nota:'2 médicos, 2 obstetras, 2 enfermeras; laboratorio'},
+    '4907':{cat:'I-1',lab:true,obs:true,med:true,enf:false,tec:true,nota:'Médico, obstetra, laboratorio, 2 técnicos de enfermería'},
+    '4909':{cat:'I-1',lab:false,obs:true,med:false,enf:false,tec:true,nota:'Obstetra y técnicos de enfermería'},
+    '4906':{cat:'I-1',lab:false,obs:false,med:true,enf:false,tec:true,nota:'Médico SERUMS y técnico de enfermería'}
+  };
+  // Altitud y ajuste de Hb: Memorándum Múltiple N.º 012-2025-G.R. Amazonas/RISCH/M.R. Yerbabuena (NTS 213-MINSA/DGIESP-2024)
+  const ALT = {'4904':[1974,1.1,'Jalca Grande'],'4905':[2850,1.8,'Jalca Grande'],'7281':[2891,1.8,'Jalca Grande'],'7280':[2600,1.8,'Jalca Grande'],
+    '7070':[2638,1.8,'Jalca Grande'],'7069':[2112,1.4,'Jalca Grande'],'4906':[2700,1.8,'Jalca Grande'],'4907':[2210,1.4,'Mariscal Castilla'],
+    '4908':[2600,1.8,'Mariscal Castilla'],'4910':[2200,1.4,'San Juan de Lopecancha'],'4911':[2950,1.8,'San Juan de Lopecancha'],
+    '4909':[2500,1.8,'Montevideo'],'25129':[1965,1.1,'Santo Tomás']};
+  const ejemplo = () => Object.fromEntries(EESS.map(([r]) => { const a = ALT[r]||[null,null,'']; return [r, Object.assign({cat:'I-1',lab:false,obs:false,med:false,enf:false,tec:true,nota:'Técnicos de enfermería'}, BASE[r]||{}, {alt:a[0], fac:a[1], dist:a[2]})]; }));
+  function applyEess(){ const c = CFG[$('f_eess').value]||{}; if(c.alt!=null) $('f_alt').value = c.alt; $('f_fac').value = c.fac!=null ? c.fac : ''; }
+  let CFG = ejemplo(), SEL = {eess:'4904', perfil:'obs'};
+  try { const s = JSON.parse(localStorage.getItem(KEY)||'null'); if(s && s.cfg){ CFG = Object.assign(CFG, s.cfg); SEL = Object.assign(SEL, s.sel||{}); } } catch(e){}
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({cfg:CFG, sel:SEL})); } catch(e){} };
+  const nombre = r => (EESS.find(e=>e[0]===r)||[])[1] || r;
+  const conProf = () => EESS.filter(([r]) => CFG[r].obs || CFG[r].med).map(([r])=>nombre(r));
+  const conLab = () => EESS.filter(([r]) => CFG[r].lab).map(([r])=>nombre(r));
+  const lista = a => a.length ? a.join(', ') : 'ninguno marcado en «Mi microred»';
+
+  function fillEess(){
+    $('f_eess').innerHTML = EESS.map(([r,n]) => `<option value="${r}">${n}${CFG[r].lab?' · laboratorio':''}</option>`).join('');
+    $('f_eess').value = SEL.eess; $('f_perfil').value = SEL.perfil;
+  }
+  function renderCfg(){
+    const ck = (r,k) => `<input type="checkbox" id="cfg_${k}_${r}" data-r="${r}" data-k="${k}" ${CFG[r][k]?'checked':''} aria-label="${k} ${nombre(r)}">`;
+    $('cfgBody').innerHTML = EESS.map(([r,n,m]) => `<tr><td><b>${n}</b>${CFG[r].nota?`<br><small class="note">${CFG[r].nota}</small>`:''}</td><td>${CFG[r].cat||''}</td><td>${r}</td><td>${m}</td>
+      <td class="c">${ck(r,'lab')}</td><td class="c">${ck(r,'obs')}</td><td class="c">${ck(r,'med')}</td><td class="c">${ck(r,'enf')}</td><td class="c">${ck(r,'tec')}</td>
+      <td><input type="number" id="cfg_alt_${r}" data-r="${r}" data-k="alt" value="${CFG[r].alt??''}" placeholder="msnm" inputmode="numeric"></td>
+      <td><input type="number" step="0.1" id="cfg_fac_${r}" data-r="${r}" data-k="fac" value="${CFG[r].fac??''}" placeholder="g/dL" inputmode="decimal"></td></tr>`).join('');
+  }
+  $('cfgBody').addEventListener('change', e => {
+    const t = e.target, r = t.dataset.r, k = t.dataset.k; if(!r) return;
+    CFG[r][k] = (k==='alt'||k==='fac') ? (t.value===''?null:parseFloat(t.value)) : t.checked;
+    save(); fillEess(); if(r===$('f_eess').value) applyEess(); render(); $('cfgMsg').textContent = 'Guardado en este equipo.';
+  });
+  $('cfgReset').addEventListener('click', () => { CFG = ejemplo(); save(); renderCfg(); fillEess(); applyEess(); render(); $('cfgMsg').textContent = 'Se restableció el ejemplo.'; });
+
+  /* ---------- valores de ejemplo ---------- */
+  const hoy = new Date(); hoy.setHours(12,0,0,0);
+  $('f_fecha').value = iso(hoy);
+  $('f_fur').value = iso(new Date(hoy.getTime()-184*DAY)); // 26 sem 2 d
+
+  /* ---------- cálculos clínicos ---------- */
+  function edadGestacional(){
+    const fecha = parse($('f_fecha').value) || hoy;
+    const eco = num('f_eco');
+    if(eco !== null) return {w:Math.floor(eco), d:0, fpp:new Date(fecha.getTime()+(280-eco*7)*DAY), src:'ecografía'};
+    const fur = parse($('f_fur').value);
+    if(!fur) return null;
+    const days = Math.round((fecha-fur)/DAY);
+    if(days < 0) return {err:'La FUR es posterior a la fecha de atención.'};
+    return {w:Math.floor(days/7), d:days%7, fpp:new Date(fur.getTime()+280*DAY), src:'FUR'};
+  }
+
+  function factorAltitud(alt){
+    // Estimación OMS 2024 (g/L → g/dL). Referencial: use Tabla 1 de la NTS 213.
+    if(alt === null || alt < 500) return 0;
+    return Math.round((0.0056384*alt + 0.0000003*alt*alt)/10*10)/10;
+  }
+
+  function anemia(hb, tri){
+    const corte = tri===2 ? 10.5 : 11.0;
+    const mod = tri===2 ? 9.5 : 10.0;
+    if(hb >= corte) return {anemia:false, corte};
+    if(hb < 7) return {anemia:true, grado:'SEV', txt:'severa', corte};
+    if(hb < mod) return {anemia:true, grado:'MOD', txt:'moderada', corte};
+    return {anemia:true, grado:'LEV', txt:'leve', corte};
+  }
+
+  const IOM = { // ganancia total y semanal 2.º-3.er trimestre
+    del:{tot:'12.5–18', lo:.44, hi:.58}, nor:{tot:'11.5–16', lo:.35, hi:.50},
+    sob:{tot:'7–11.5', lo:.23, hi:.33}, obe:{tot:'5–9', lo:.17, hi:.27}
+  };
+  function claseIMC(imc){
+    if(imc < 18.5) return {k:'del', txt:'Delgadez', code:'O25X'};
+    if(imc < 25) return {k:'nor', txt:'Normal', code:'Z006'};
+    if(imc < 30) return {k:'sob', txt:'Sobrepeso', code:'E663'};
+    return {k:'obe', txt:'Obesidad', code:'E669'};
+  }
+
+  /* ---------- motor de reglas ---------- */
+  function build(){
+    const s = {
+      apn: Math.max(1, Math.round(num('f_apn')||1)), edad: num('f_edad'), cod: $('f_cod').value,
+      tamSel: $('f_tam').value, sup: num('f_sup'), cal: num('f_cal'),
+      pp: num('f_pp'), talla: num('f_talla'), peso: num('f_peso'),
+      hb: num('f_hb'), alt: num('f_alt'), fac: num('f_fac'), anprev: $('f_anprev').checked,
+      viol: $('f_viol').checked, itu: $('f_itu').checked, dtpa: $('f_dtpa').checked, pap: $('f_pap').checked,
+      eess: $('f_eess').value, perfil: $('f_perfil').value
+    };
+    const C = CFG[s.eess] || {}, tec = s.perfil === 'tec', hayLab = !!C.lab;
+    const eg = edadGestacional();
+    const rows = [], alerts = [], inds = [], pend = [], stats = [];
+    // o.req: 'P' solo profesional (propuesta por validar), 'T' cualquier personal capacitado; o.lab: requiere laboratorio
+    const add = (g,code,name,tipo,lab,why,o={}) => rows.push({g,code,name,tipo,lab:[].concat(lab).filter(x=>x!==null&&x!==''),why,req:o.req||'P',needLab:!!o.lab});
+    const T = {req:'T'};
+    const alert = (c,html) => alerts.push({c,html});
+
+    if(!eg){ return {stats:[{l:'Edad gestacional',v:'Falta FUR o ecografía',warn:true}],rows,alerts:[{c:'red',html:'Ingrese la FUR o la edad gestacional por ecografía.'}],inds,pend}; }
+    if(eg.err){ return {stats:[{l:'Edad gestacional',v:'Revise fechas',warn:true}],rows,alerts:[{c:'red',html:eg.err}],inds,pend}; }
+
+    const w = eg.w, tri = w < 14 ? 1 : (w < 28 ? 2 : 3);
+    const triTxt = ['','I trimestre','II trimestre','III trimestre'][tri];
+    const n = s.apn, ent = v => v===null ? 'n.º' : String(v);
+    stats.push({l:'Edad gestacional', v:`${w} sem ${eg.d} d`, s:eg.src});
+    stats.push({l:'Trimestre', v:triTxt});
+    stats.push({l:'Fecha probable de parto', v:fmtDate(eg.fpp)});
+    if(w > 42 || w < 4) alert('red', `La edad gestacional calculada (${w} sem) está fuera de rango. Revise la FUR.`);
+
+    // Tamizaje según NTS 213: 1.ª APN, 25–28 sem, 37–40 sem
+    let tam = 0;
+    if(s.tamSel === 'auto'){ tam = n===1 ? 1 : (w>=25 && w<=28 ? 2 : (w>=37 ? 3 : 0)); }
+    else tam = parseInt(s.tamSel,10);
+
+    /* Dónde y quién */
+    if(tec){
+      add('sup','Z359','Supervisión de embarazo (actividad fuera de la APN)','D',[],
+        'El personal técnico no registra la APN: usa Z359 como primer diagnóstico de lo que hizo (suplemento, tamizaje, consejería, vacuna).', T);
+      alert('red', `<b>La atención prenatal la hace un profesional.</b> ${(C.obs||C.med) ? 'En este establecimiento hay obstetra o médico: coordine para que complete la APN.' : 'Este establecimiento no tiene obstetra ni médico marcado. Refiera o programe la APN en: <b>'+lista(conProf())+'</b>.'}`);
+    }
+    const pf = {obs:'obstetra',med:'médico',enf:'enfermera',tec:'técnico'}[s.perfil];
+    if(!C[s.perfil]) alert('yellow', `En «Mi microred» este establecimiento no tiene ${pf} registrado. Revise el perfil o actualice la configuración.`);
+    if(!hayLab) alert('blue', `Sin laboratorio: Hb con hemoglobinómetro (85018.01), tira reactiva y pruebas rápidas sí se hacen aquí si hay insumos. La batería se refiere a: <b>${lista(conLab())}</b>, y la registra el establecimiento que la procesa.`);
+
+    /* Supervisión */
+    const sup = s.cod + tri;
+    add('sup', sup, `Supervisión de embarazo, ${triTxt}`, 'D', [n, w],
+      `LAB 1: n.º de APN. LAB 2: semanas. ${s.cod==='Z359' ? 'Z359x según las guías de la red (embarazo con riesgo).' : 'Z349x: embarazo normal, según el manual 2023.'}`);
+    if(n===1) add('cons','59401.06','Plan de parto','D',[1],'1.er plan en la APN; el 2.º y 3.º se registran en visita domiciliaria.');
+
+    /* Nutrición */
+    if(n===1) add('nut','99209.04','Evaluación nutricional antropométrica','D',[],'En la primera atención.');
+    let imc = null, cl = null;
+    if(s.pp && s.talla){
+      imc = s.pp / Math.pow(s.talla/100,2); cl = claseIMC(imc);
+      stats.push({l:'IMC pregestacional', v:`${imc.toFixed(1)} · ${cl.txt}`});
+      if(n===1) add('nut', cl.code, `Estado nutricional: ${cl.txt.toLowerCase()} (IMC ${imc.toFixed(1)})`, 'D', [],
+        cl.k==='sob'||cl.k==='obe' ? 'Código a confirmar: las guías locales usan E66.0 / E66.9 de forma contradictoria.' : 'Según IMC pregestacional, cortes OMS.');
+      if(s.edad!==null && s.edad < 19) alert('yellow','En adolescentes el estado nutricional se evalúa con IMC para la edad, no con estos cortes.');
+    }
+    if(cl && s.peso && w >= 14){
+      const g = s.peso - s.pp, r = IOM[cl.k];
+      const lo = 0.5 + (w-13)*r.lo, hi = 2 + (w-13)*r.hi;
+      let code='Z006', txt='Adecuada ganancia de peso';
+      if(g < lo){ code='O261'; txt='Ganancia de peso menor a lo recomendado'; }
+      else if(g > hi){ code='O260'; txt='Ganancia de peso mayor a lo recomendado'; }
+      stats.push({l:'Ganancia de peso', v:`${g>=0?'+':''}${g.toFixed(1)} kg`, s:`esperado ${lo.toFixed(1)}–${hi.toFixed(1)} kg`, warn: code!=='Z006'});
+      add('nut', code, txt, n===1 ? 'D' : 'R', [],
+        `${n===1?'D':'R'}: la guía HVCA registra D la primera vez desde las 14 sem y R después. Rango de referencia a las ${w} sem: ${lo.toFixed(1)}–${hi.toFixed(1)} kg (total recomendado ${r.tot} kg).`);
+    }
+    add('cons','99403.01','Consejería nutricional','D',[],'En todas las atenciones prenatales.', T);
+
+    /* Suplementos */
+    let an = null, hbAdj = null, fac = null;
+    if(s.hb !== null){
+      fac = s.fac !== null ? s.fac : factorAltitud(s.alt);
+      hbAdj = Math.round((s.hb - fac)*10)/10;
+      an = anemia(hbAdj, tri);
+      stats.push({l:'Hb ajustada', v:`${hbAdj.toFixed(1)} g/dL`, s: an.anemia ? `anemia ${an.txt} (corte ${an.corte})` : `sin anemia (corte ${an.corte})`, warn: an.anemia});
+    }
+    if(w <= 13){
+      add('supl','99199.18','Suplementación con ácido fólico','D',[ent(s.sup)],'Hasta las 13 semanas. LAB: n.º de entrega.', T);
+    } else {
+      add('supl','99199.26', an && an.anemia ? 'Sulfato ferroso + ácido fólico (tratamiento)' : 'Suplementación con sulfato ferroso + ácido fólico','D',[ent(s.sup)],
+        an && an.anemia ? 'Con anemia el mismo código registra el tratamiento. LAB 1–6; TA al completar.' : 'Desde las 14 semanas. LAB: n.º de entrega; TA al completar.', an && an.anemia ? {} : T);
+    }
+    if(w >= 20) add('supl','59401.05','Suplementación con calcio','D',[ent(s.cal)],'Desde las 20 semanas. LAB: n.º de entrega.', T);
+
+    /* Laboratorio */
+    add('lab','81000.02','Tamizaje de bacteriuria asintomática','D',[s.itu?'RP':'RN'],'En todas las atenciones. RN negativo, RP positivo.', T);
+    if(s.itu){
+      add('dx','O234','Infección urinaria en el embarazo','D',[],'Por bacteriuria positiva.');
+      add('dx','99199.11','Administración de tratamiento','D',[],'Tratamiento de la ITU.');
+    }
+    if(w >= 20) add('lab','82044','Tamizaje de proteinuria','D',['RN'],'Desde las 20 semanas. Cambie a RP si sale positivo.', T);
+    if(tam > 0 || s.hb !== null){
+      add('lab', hayLab ? '85018' : '85018.01', hayLab ? 'Dosaje de hemoglobina' : 'Dosaje de hemoglobina con hemoglobinómetro', 'D', [tam>0 ? tam : 'n.º'],
+        `Registrar la Hb observada${s.hb!==null?' ('+s.hb.toFixed(1)+')':''}; la ajustada va en la historia clínica. ${hayLab?'Use 85018.01 si fue con hemoglobinómetro.':'Sin laboratorio se registra el hemoglobinómetro.'}`, T);
+    }
+    if(tam > 0){
+      const t = tam===1 ? 'D' : 'R';
+      add('cons','99401.33','Consejería pre test VIH', t, [tam], `LAB = n.º de tamizaje. ${t==='R'?'La guía HVCA usa R desde el 2.º tamizaje.':''}`);
+      add('lab','86318.01','Prueba rápida dual VIH / sífilis', t, ['RN','RN'], 'Un LAB por prueba: RN o RP.');
+      add('cons','99401.34','Consejería post test VIH', t, [tam], 'LAB = n.º de tamizaje.');
+      add('lab','87342','Prueba rápida hepatitis B', t, ['RN'], '');
+      add('cons','99402.05','Consejería en ITS, VIH y hepatitis B', t, [tam], '');
+      if(tam===1) add('lab','80055.01','1.ª batería de laboratorio','D',[1],'Solo si se completó todo el paquete (glucosa, grupo y factor, etc.).', {lab:true});
+    }
+    if(w >= 31 && w <= 34) add('lab','80055.02','2.ª batería de laboratorio','D',[2],'La guía HVCA la ubica entre las 31 y 34 semanas.', {lab:true});
+
+    /* Anemia */
+    if(an){
+      if(an.anemia){
+        add('dx','O990','Anemia que complica el embarazo', s.anprev ? 'R' : 'D', [an.grado],
+          `${an.txt[0].toUpperCase()+an.txt.slice(1)}: Hb ajustada ${hbAdj.toFixed(1)} g/dL (observada ${s.hb.toFixed(1)} − ajuste ${fac.toFixed(1)}). ${s.anprev?'R porque ya fue diagnosticada antes.':'D por ser la primera detección; debe ir con la APN del mismo día.'}`);
+        alert('red', `<b>Anemia ${an.txt}.</b> Inicie o continúe tratamiento y repita la Hb cada 4 semanas hasta normalizar (NTS 213).`);
+      } else if(s.anprev){
+        add('dx','O990','Anemia: recuperada','R',['PR'],'Solo si completó el tratamiento y la Hb se normalizó.');
+      }
+      if(s.fac === null && fac > 0) alert('yellow', `Factor de altitud estimado en ${fac.toFixed(1)} g/dL para ${s.alt} msnm. Escriba el ajuste oficial en «Mi microred» o en el campo de ajuste.`);
+    }
+
+    /* Consejerías */
+    add('cons','99402.01','Consejería en signos de alarma','D',[n],'En todas las atenciones. LAB: correlativo.', T);
+    const lact = (w>=25&&w<=27) ? 1 : (w>=28&&w<=36 ? 2 : (w>=37 ? 3 : 0));
+    if(lact) add('cons','99401.02',`Consejería en lactancia materna (${lact}.ª)`,'D',[lact],
+      ['','Ventana de 25 a 27 sem.','Ventana de 28 a 36 sem.','Ventana de 37 a 40 sem.'][lact]+' Una sola vez por ventana.', T);
+    if(n===1){
+      add('cons','99402.03','Consejería en salud sexual y reproductiva','D',[1],'');
+      add('cons','96150.01','Tamizaje de violencia','D',[],'En la 1.ª atención.');
+      add('cons','99402.09','Consejería en prevención de riesgos en salud mental','D',[],'');
+    }
+    if(s.viol){
+      if(n>1) add('cons','96150.01','Tamizaje de violencia','D',[],'Se vuelve a registrar porque se detectó violencia.');
+      add('dx','R456','Problemas relacionados con la violencia','D',[],'Sospecha o caso positivo. Derivar según protocolo.');
+    }
+    if(n===1 && s.pap){
+      add('lab','88141','Toma de muestra de PAP','D',[],'');
+      add('lab','99386.03','Examen clínico de mamas','D',['N'],'N normal, A anormal.');
+      add('cons','99402.08','Consejería integral en cáncer','D',[1],'Solo en el primer tamizaje.');
+    }
+
+    /* Vacunas */
+    if(w >= 20 && w <= 36 && !s.dtpa) add('vac','90715','Vacuna dTpa','D',['G'],'Entre las 20 y 36 semanas, si no la recibió. Lo registra quien vacuna.', T);
+    if(w > 36 && !s.dtpa) alert('yellow','No se registró dTpa en la gestación y ya pasó la ventana de 20 a 36 semanas.');
+
+    /* Alertas de gestión */
+    if(n===1 && w>=14) alert('yellow', `Captación a las ${w} semanas: no suma a la ficha 5 (atendida en el I trimestre).`);
+    if(n===6) alert('green','6.ª atención: la gestante pasa a <b>controlada</b> (ficha 4). La guía HVCA anota "PC".');
+    if(w>=37) alert('yellow','Verifique si cierra el paquete completo <b>TA</b>: captación en I trimestre, baterías, 3 planes de parto, suplementación, dTpa, odontología, laboratorio y ecografía.');
+    if(n===1 || s.viol) alert('yellow','La ficha 10 cuenta gestantes con <b>4 tamizajes</b> de violencia; la guía de la red registra uno solo. Pendiente de definir con la coordinadora.');
+    if(n>1 && tam===0 && s.tamSel==='auto' && !(w>=25&&w<=28) && w<37) alert('blue', `Próximo tamizaje de laboratorio: ${w<25?'entre las 25 y 28':'entre las 37 y 40'} semanas.`);
+    if(w>=29 && w<31) alert('blue','Programe la 2.ª batería entre las 31 y 34 semanas.');
+    if(s.edad!==null && s.edad < 18) alert('blue','Gestante adolescente: cuenta también para las fichas 8 y 9.');
+
+    /* Indicadores */
+    if(n===1 && w<14) inds.push(['Ficha 5 · Atendida en el I trimestre',true]);
+    if(n===1 && w<14 && tam===1) inds.push(hayLab ? ['Ficha 6 · Paquete básico I trimestre (si completa el paquete)',true] : ['Ficha 6 · Paquete básico: falta la batería en un EESS con laboratorio antes de las 14 sem',false]);
+    if(n===1 && w>=14) inds.push(['Ficha 5 · Captación tardía, no suma',false]);
+    if(n===6) inds.push(['Ficha 4 · Gestante controlada',true]);
+    if(n===1 || s.viol) inds.push(['Ficha 10 · Tamizaje de violencia',true]);
+    if(s.viol) inds.push(['Ficha 11 · Tamizaje positivo',true]);
+    if(s.hb!==null || tam>0) inds.push(['Ficha 12 · Denominador: gestante con dosaje de Hb',true]);
+    if(an && an.anemia && !s.anprev) inds.push(['Ficha 12 · Numerador: caso de anemia',true]);
+    if(an && !an.anemia && s.anprev) inds.push(['Ficha 13 · Recuperada de anemia',true]);
+    if(s.edad!==null && s.edad<18){ inds.push(['Ficha 9 · Gestante adolescente atendida',true]); if(n===1&&w<14) inds.push(['Ficha 8 · Adolescente en el I trimestre',true]); }
+
+    /* Pendientes fuera del registro */
+    pend.push(`Ecografía obstétrica del ${triTxt}, si aún no tiene.`);
+    if(n<=2) pend.push('Interconsulta con psicología y odontología.');
+    if(w>=20) pend.push('Psicoprofilaxis obstétrica y estimulación prenatal.');
+    pend.push('Próxima cita y visita domiciliaria si no acude (C0011).');
+    if(w>=14 && w<=36) pend.push('Plan de parto 2.º y 3.º en visita domiciliaria (59401.06 con LAB 2 y 3).');
+
+    return {stats, rows, alerts, inds, pend};
+  }
+
+  /* ---------- render ---------- */
+  let lastRows = [];
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function render(){
+    const r = build();
+    $('strip').innerHTML = r.stats.map(s=>`<div class="stat${s.warn?' warn':''}"><small>${esc(s.l)}</small><b>${esc(s.v)}</b>${s.s?`<small style="text-transform:none;letter-spacing:0">${esc(s.s)}</small>`:''}</div>`).join('');
+    const rowHtml = (x,off) => `
+      <div class="row g-${x.g}${off?' off':''}">
+        <div class="code">${esc(x.code)}</div>
+        <div class="name">${esc(x.name)}</div>
+        <div class="tags"><span class="tag t" title="Tipo de diagnóstico">${esc(x.tipo)}</span>${x.lab.map(l=>`<span class="tag" title="LAB">${esc(l)}</span>`).join('')}</div>
+        ${x.why?`<div class="why">${esc(x.why)}</div>`:''}
+      </div>`;
+    const tec = $('f_perfil').value==='tec', hayLab = !!(CFG[$('f_eess').value]||{}).lab;
+    const labRef = r.rows.filter(x => x.needLab && !hayLab);
+    const prof = r.rows.filter(x => !labRef.includes(x) && tec && x.req==='P');
+    const mine = r.rows.filter(x => !labRef.includes(x) && !prof.includes(x));
+    lastRows = mine;
+    $('nrows').textContent = mine.length + ' líneas';
+    $('rows').innerHTML = mine.map(x=>rowHtml(x,false)).join('') || '<div class="box blue">Complete los datos para ver el registro.</div>';
+    $('rowsProf').innerHTML = prof.length ? `<p class="subhead">Lo registra el profesional que hace la APN (${prof.length})</p><div class="rows">${prof.map(x=>rowHtml(x,true)).join('')}</div>` : '';
+    $('rowsLab').innerHTML = labRef.length ? `<p class="subhead">Se refiere a un establecimiento con laboratorio (${labRef.length})</p><div class="rows">${labRef.map(x=>rowHtml(x,true)).join('')}</div>` : '';
+    const C = CFG[$('f_eess').value]||{};
+    const prs = [['obs','Obstetra'],['med','Médico'],['enf','Enfermera']].filter(([k])=>C[k]).map(([,t])=>t);
+    $('eessInfo').innerHTML = `<span class="badge">${C.cat||''}</span><span class="badge ${C.lab?'ok':'no'}">${C.lab?'Con laboratorio':'Sin laboratorio'}</span>`
+      + `<span class="badge ${prs.length?'ok':'no'}">${prs.length?prs.join(' · '):'Sin profesional'}</span>${C.tec?'<span class="badge">Técnico</span>':''}`
+      + `<span class="badge">Meta 2026: ${(EESS.find(e=>e[0]===$('f_eess').value)||[,,'–'])[2]} gestantes</span>`;
+    $('nalerts').textContent = r.alerts.length;
+    $('alerts').innerHTML = r.alerts.map(a=>`<div class="box ${a.c}">${a.html}</div>`).join('') || '<div class="box green">Sin observaciones para esta atención.</div>';
+    $('inds').innerHTML = r.inds.map(([t,ok])=>`<span class="chip${ok?'':' no'}">${esc(t)}</span>`).join('') || '<span class="note">Esta atención no mueve directamente ningún indicador de las fichas.</span>';
+    $('pend').innerHTML = `<ul>${r.pend.map(p=>`<li>${esc(p)}</li>`).join('')}</ul>`;
+    $('copyFb').hidden = true; $('copyMsg').textContent = '';
+  }
+  $('f_eess').addEventListener('change', () => { SEL.eess=$('f_eess').value; applyEess(); save(); });
+  $('f_perfil').addEventListener('change', () => { SEL.perfil=$('f_perfil').value; save(); });
+  $('frm').addEventListener('input', render);
+  $('frm').addEventListener('change', render);
+  $('frm').addEventListener('submit', e => e.preventDefault());
+
+  $('btnCopy').addEventListener('click', () => {
+    const txt = ['Código\tTipo\tLAB\tActividad'].concat(lastRows.map(x=>`${x.code}\t${x.tipo}\t${x.lab.join(' | ')}\t${x.name}`)).join('\n');
+    const fb = () => { const t=$('copyFb'); t.value=txt; t.hidden=false; t.focus(); t.select(); $('copyMsg').textContent='Seleccione el texto y cópielo.'; };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(()=>{ $('copyMsg').textContent='Copiado: '+lastRows.length+' líneas.'; }).catch(fb);
+    } else fb();
+  });
+
+  /* ---------- catálogo ---------- */
+  const CAT = JSON.parse($('catalogo').textContent);
+  const norm = t => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  function renderCodes(){
+    const q = norm($('q').value.trim());
+    const list = CAT.filter(([c,d,n]) => !q || norm(c+' '+d+' '+n).includes(q));
+    $('codes').innerHTML = list.map(([c,d,n])=>`<div class="code-card"><div class="c">${esc(c)}</div><div class="d">${esc(d)}</div>${n?`<div class="n">${esc(n)}</div>`:''}</div>`).join('')
+      || '<div class="box yellow">No hay códigos que coincidan. Pruebe con otra palabra.</div>';
+  }
+  $('q').addEventListener('input', renderCodes);
+
+  /* ---------- pestañas ---------- */
+  document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', x===b ? 'true':'false'));
+    ['apn','mr','cod','reg'].forEach(v => $('v-'+v).hidden = v !== b.dataset.v);
+    window.scrollTo({top:0});
+  }));
+
+  fillEess(); applyEess(); renderCfg(); render(); renderCodes();
+})();
+</script>
+
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+</script>
+</body>
+</html>

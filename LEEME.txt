@@ -1,0 +1,25 @@
+ASISTENTE HIS · ATENCIÓN PRENATAL · M.R. YERBABUENA
+Versión instalable (PWA): funciona sin internet una vez instalada.
+
+PUBLICAR (una sola vez, gratis, con GitHub Pages)
+1. Cree una cuenta en github.com.
+2. Cree un repositorio público, por ejemplo: his-materno
+3. Botón "Add file" > "Upload files": suba TODO el contenido de esta carpeta
+   (index.html, manifest.json, sw.js y la carpeta icons). Confirme con "Commit".
+4. Settings > Pages > Source: "Deploy from a branch" > Branch: main / (root) > Save.
+5. En 1–2 minutos queda en: https://SU-USUARIO.github.io/his-materno/
+
+INSTALAR EN CADA CELULAR (con internet, una vez)
+1. Abra el enlace en Chrome.
+2. Menú (⋮) > "Agregar a pantalla principal" o "Instalar aplicación".
+3. Ábrala una vez con internet. Desde ahí funciona sin señal.
+
+INSTALAR EN UNA PC
+Abra el enlace en Chrome o Edge > ícono de instalar en la barra de direcciones.
+
+ACTUALIZAR
+Reemplace index.html en GitHub y cambie VERSION en sw.js (ej. his-apn-v2-2026-12).
+Cada equipo recibe la versión nueva la próxima vez que abra la app con internet.
+
+NOTA: la app no guarda datos de pacientes. Solo recuerda en cada equipo el
+establecimiento elegido y la configuración de «Mi microred».
