@@ -180,29 +180,27 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
           <label class="f">Fecha de atención<input type="date" id="f_fecha"></label>
           <label class="f">FUR<input type="date" id="f_fur"></label>
           <label class="f">EG por ecografía (sem)<span class="h">Si la llena, reemplaza a la FUR</span><input type="number" id="f_eco" min="4" max="42" inputmode="numeric"></label>
-          <label class="f">N.º de atención prenatal<input type="number" id="f_apn" min="1" max="15" value="5" inputmode="numeric"></label>
+          <label class="f">N.º de atención prenatal<input type="number" id="f_apn" min="1" max="15" value="1" inputmode="numeric"></label>
           <label class="f">Edad de la gestante<input type="number" id="f_edad" min="10" max="55" value="24" inputmode="numeric"></label>
-          <label class="f">Criterio de supervisión
-            <select id="f_cod"><option value="manual">Según riesgo (manual 2023)</option><option value="red">Siempre Z359x (guías de la red)</option></select></label>
-          <label class="check"><input type="checkbox" id="f_riesgo"> Gestación con factor de riesgo (usa Z359x; sin riesgo, Z349x)</label>
 
           <p class="sub">Laboratorio y suplementos</p>
           <label class="f">Dosaje de Hb en esta atención<span class="h">1.ª APN, 25–28 y 37–40 sem; con anemia, cada mes</span>
             <select id="f_tam"><option value="auto">Automático</option><option value="0">No corresponde</option><option value="1">1.er dosaje</option><option value="2">2.º dosaje</option><option value="3">3.er dosaje</option><option value="4">4.º dosaje</option><option value="5">5.º dosaje</option><option value="6">6.º dosaje</option><option value="7">7.º dosaje</option></select></label>
           <label class="f">Tamizaje VIH, sífilis y hepatitis B<span class="h">1.ª APN y desde las 33 sem (5.ª APN)</span>
             <select id="f_vih"><option value="auto">Automático</option><option value="0">No corresponde</option><option value="1">1.er tamizaje (1.ª batería)</option><option value="2">2.º tamizaje (2.ª batería)</option></select></label>
-          <label class="f">N.º entrega hierro / ácido fólico<span class="h">Correlativo (1, 2, 3…)</span><input type="number" id="f_sup" min="1" max="12" value="4" inputmode="numeric"></label>
-          <label class="f">N.º entrega calcio<span class="h">Desde las 20 sem</span><input type="number" id="f_cal" min="1" max="12" value="2" inputmode="numeric"></label>
+          <label class="f">N.º entrega ácido fólico<span class="h">Hasta las 13 sem: 1 o 2</span><input type="number" id="f_af" min="1" max="2" value="1" inputmode="numeric"></label>
+          <label class="f">N.º entrega sulfato ferroso<span class="h">Desde las 14 sem o con anemia: 1, 2, 3…</span><input type="number" id="f_sup" min="1" max="12" inputmode="numeric"></label>
+          <label class="f">N.º entrega calcio<span class="h">Desde las 20 sem: 1, 2, 3, 4</span><input type="number" id="f_cal" min="1" max="12" inputmode="numeric"></label>
 
           <p class="sub">Nutrición</p>
           <label class="f">Peso pregestacional (kg)<input type="number" id="f_pp" step="0.1" value="52" inputmode="decimal"></label>
           <label class="f">Talla (cm)<input type="number" id="f_talla" step="0.1" value="152" inputmode="decimal"></label>
-          <label class="f">Peso actual (kg)<input type="number" id="f_peso" step="0.1" value="58.5" inputmode="decimal"></label>
+          <label class="f">Peso actual (kg)<input type="number" id="f_peso" step="0.1" value="52.5" inputmode="decimal"></label>
           <label class="f">Ganancia de peso en la APN anterior
-            <select id="f_gprev"><option value="">Aún no se evaluó</option><option value="Z006" selected>Adecuada (Z006)</option><option value="O261">Baja (O261)</option><option value="O260">Alta (O260)</option></select></label>
+            <select id="f_gprev"><option value="" selected>Aún no se evaluó</option><option value="Z006">Adecuada (Z006)</option><option value="O261">Baja (O261)</option><option value="O260">Alta (O260)</option></select></label>
 
           <p class="sub">Anemia</p>
-          <label class="f">Hb observada (g/dL)<input type="number" id="f_hb" step="0.1" value="11.6" inputmode="decimal"></label>
+          <label class="f">Hb observada (g/dL)<input type="number" id="f_hb" step="0.1" value="12.4" inputmode="decimal"></label>
           <label class="f">Altitud de residencia (msnm)<input type="number" id="f_alt" step="1" value="2335" inputmode="numeric"></label>
           <label class="f full">Ajuste de Hb a disminuir (g/dL)<span class="h">Se llena según el establecimiento (memorándum de la M.R.). Si la gestante vive a otra altitud, corríjalo</span><input type="number" id="f_fac" step="0.1" inputmode="decimal"></label>
           <label class="check"><input type="checkbox" id="f_anprev"> La anemia ya fue diagnosticada en una atención anterior</label>
@@ -218,7 +216,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
         </form>
       </div>
     </details>
-    <p class="note">Ejemplo cargado: gestante de 24 años en su 5.ª atención. Cambie el establecimiento o «Quién atiende» para ver cómo cambia el registro. La app no guarda nombres ni datos: todo se borra al cerrar.</p>
+    <p class="note">Ejemplo cargado: gestante de 24 años en su 1.ª atención, a las 10 semanas. Cambie el establecimiento o «Quién atiende» para ver cómo cambia el registro. La app no guarda nombres ni datos: todo se borra al cerrar.</p>
   </div>
 
   <div class="col">
@@ -274,9 +272,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
             <select id="p_tipo"><option value="c1" selected>1.er control de puerperio</option><option value="c2">2.º control de puerperio (30 días)</option><option value="inm">Puerperio inmediato: parto atendido en este establecimiento</option></select></label>
           <label class="f">Tipo de parto
             <select id="p_parto"><option value="v">Vaginal</option><option value="c">Cesárea</option></select></label>
-          <label class="f">N.º entrega de hierro<span class="h">Continúa la de la gestación</span><input type="number" id="p_sup" min="1" max="15" value="7" inputmode="numeric"></label>
           <label class="check"><input type="checkbox" id="p_inst" checked> El parto fue institucional (cumplió su plan de parto)</label>
-          <label class="check"><input type="checkbox" id="p_comp"> Con esta entrega completa sus 30 tabletas de hierro del puerperio</label>
+          <label class="check"><input type="checkbox" id="p_fe1"> Ya recibió sus 30 tabletas de hierro en el 1.er control</label>
           <p class="sub">Hemoglobina</p>
           <label class="f">Hb observada (g/dL)<input type="number" id="p_hb" step="0.1" inputmode="decimal"></label>
           <label class="f">Ajuste por altitud (g/dL)<span class="h">Del establecimiento elegido</span><input type="number" id="p_fac" step="0.1" inputmode="decimal"></label>
@@ -334,15 +331,15 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
     <details class="fuente" open>
       <summary>Decisiones que debe validar la coordinadora</summary>
       <div class="body">
-        <div class="box yellow"><b>Z349x o Z359x.</b> Desde la versión 2 la app sigue el manual 2023: Z349x sin factor de riesgo y Z359x con factor de riesgo. Si la red decide usar siempre Z359x, se elige en «Criterio de supervisión».</div>
-        <div class="box yellow"><b>dTpa.</b> El manual 2023 la indica entre las 27 y 36 semanas; las guías de la red, desde las 20. Confirmar con Inmunizaciones según el esquema vigente.</div>
+        <div class="box green"><b>Z349x o Z359x: resuelto.</b> Se usa Z359x en todas las gestantes porque el HIS marca error con Z349x.</div>
+        <div class="box green"><b>dTpa: resuelto.</b> Entre las 20 y 36 semanas, según el esquema nacional de vacunación.</div>
         <div class="box yellow"><b>Puntos de corte de anemia.</b> El manual 2023 (anterior a la NTS 213) usa 11 / 10 / 7 g/dL. La app usa la NTS 213-2024: 11.0 en el I y III trimestre y 10.5 en el II.</div>
         <div class="box yellow"><b>Tamizaje de violencia.</b> La ficha 10 cuenta gestantes con 4 tamizajes, pero la guía HVCA registra el tamizaje solo en la 1.ª atención (y de nuevo si se detecta violencia). La app sigue la guía. Si la red quiere 4, hay que definir en qué atenciones.</div>
         <div class="box yellow"><b>Puntos de corte de IMC.</b> La guía HVCA usa 19.8 / 26 / 29. La app usa los cortes OMS de IMC pregestacional (18.5 / 25 / 30). Los códigos de sobrepeso y obesidad se contradicen entre secciones de la guía HVCA.</div>
         <div class="box green"><b>Tiempos de laboratorio: resuelto con el manual 2023.</b> Hb en la 1.ª APN, entre las 25 y 28 y entre las 37 y 40 semanas. VIH, sífilis y hepatitis B: 1.er tamizaje en la 1.ª APN y 2.º desde la 5.ª, con la 2.ª batería (unos 3 meses después de la 1.ª).</div>
         <div class="box green"><b>Ajuste de Hb por altitud: resuelto.</b> Se usan la altitud y el ajuste de cada establecimiento del Memorándum Múltiple N.º 012-2025 de la M.R. Yerbabuena (NTS 213). Solo si el campo queda vacío, la app estima el ajuste con la fórmula OMS 2024. Queda por definir si se ajusta por la altitud del establecimiento o por la del centro poblado donde vive la gestante.</div>
         <div class="box yellow"><b>Qué registra cada perfil.</b> La guía MINSA 2026 dice que la APN la hacen médico u obstetra, y que las pruebas rápidas de VIH y sífilis las hace personal profesional capacitado. La app deja a la enfermera las pruebas rápidas, el tamizaje de violencia y el PAP; al técnico, suplementos, tira reactiva, Hb, consejerías nutricional, de signos de alarma y de lactancia, y vacunas. El resto de la división es propuesta, por validar.</div>
-        <div class="box yellow"><b>Signos de alarma (99402.01) y sobrepeso.</b> El manual no numera la consejería de signos de alarma, pero el SIHCE la muestra con LAB 1. Para sobrepeso, el manual y la guía 2026 imprimen E6690 y el SIHCE muestra E660. Confirmar ambos con estadística.</div>
+        <div class="box yellow"><b>Sobrepeso.</b> El manual y la guía 2026 imprimen E6690 y el SIHCE muestra E660. Confirmar con estadística. La consejería en signos de alarma ya se numera.</div>
         <div class="box yellow"><b>Sin laboratorio.</b> La app asume que la Hb (hemoglobinómetro), la tira reactiva y las pruebas rápidas de VIH, sífilis y hepatitis B se hacen en cualquier establecimiento con insumos, y que solo la batería requiere laboratorio.</div>
         <div class="box yellow"><b>Paquete básico del I trimestre (ficha 6).</b> La ficha no lo define. El manual 2023 define el paquete básico de toda la gestación (gestante reenfocada, TA desde la 6.ª APN), no uno del I trimestre. La app considera que lo cumple quien tiene, antes de las 14 semanas, Hb, VIH/sífilis, hepatitis B, bacteriuria y la 1.ª batería.</div>
       </div>
@@ -350,7 +347,16 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
     <details class="final" open>
       <summary>Cambios de las versiones 2 y 3</summary>
       <div class="body">
-        <p class="note" style="margin:0 0 6px"><b>Versión 4</b>, observaciones de la red verificadas con la parte técnica:</p>
+        <p class="note" style="margin:0 0 6px"><b>Versión 5</b>, observaciones de campo:</p>
+        <ul>
+          <li>Supervisión siempre con Z359x: el HIS marca error con Z349x.</li>
+          <li>Campos separados para la entrega de ácido fólico y de sulfato ferroso.</li>
+          <li>dTpa entre las 20 y 36 semanas.</li>
+          <li>Consejería en signos de alarma numerada.</li>
+          <li>Hierro en el puerperio: LAB «TA» en la entrega de las 30 tabletas.</li>
+          <li>Ejemplo inicial con una 1.ª atención prenatal.</li>
+        </ul>
+        <p class="note" style="margin:10px 0 6px"><b>Versión 4</b>, observaciones de la red verificadas con la parte técnica:</p>
         <ul>
           <li>Consejerías: D en general. Las de VIH, ITS y hepatitis B van con R en el 2.º tamizaje (manual 2023 y ejemplo MINSA 2026).</li>
           <li>2.º tamizaje de VIH, sífilis y hepatitis B y 2.ª batería: desde las 33 semanas (5.ª APN del calendario de la NTS 105).</li>
@@ -400,7 +406,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
 
 </div>
 </main>
-<footer>Versión 4 · 07/11/2026 · reglas cotejadas con el Manual HIS Materno Perinatal 2023 y la guía «Registro y codificación HIS para la atención materna 2026» (MINSA/DGIESP, ene. 2026).<br>Prototipo de apoyo al registro. No reemplaza el formato HIS ni el criterio clínico. Verifique con la oficina de estadística de su red.</footer>
+<footer>Versión 5 · 07/11/2026 · reglas cotejadas con el Manual HIS Materno Perinatal 2023 y la guía «Registro y codificación HIS para la atención materna 2026» (MINSA/DGIESP, ene. 2026).<br>Prototipo de apoyo al registro. No reemplaza el formato HIS ni el criterio clínico. Verifique con la oficina de estadística de su red.</footer>
 
 <!-- Establecimientos de la M.R. Yerbabuena (RENAES, nombre, meta de gestantes 2026 del archivo de metas físicas ESARE) -->
 <script type="application/json" id="eess">
@@ -412,9 +418,9 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
 <!-- Reglas y catálogo: en la versión final este bloque lo genera R a partir del Excel maestro -->
 <script type="application/json" id="catalogo">
 [
-["Z3491","Supervisión de embarazo normal, I trimestre","Manual 2023. LAB 1: n.º de APN"],
-["Z3492","Supervisión de embarazo normal, II trimestre",""],
-["Z3493","Supervisión de embarazo normal, III trimestre",""],
+["Z3491","Supervisión de embarazo normal, I trimestre","No usar: el HIS marca error; use Z3591"],
+["Z3492","Supervisión de embarazo normal, II trimestre","No usar: use Z3592"],
+["Z3493","Supervisión de embarazo normal, III trimestre","No usar: use Z3593"],
 ["Z3591","Supervisión de embarazo con riesgo, I trimestre (≤13 sem)","Guías de la red la usan en todas las gestantes"],
 ["Z3592","Supervisión de embarazo con riesgo, II trimestre (14–27 sem)",""],
 ["Z3593","Supervisión de embarazo con riesgo, III trimestre (≥28 sem)","Desde la 6.ª APN, LAB 3 TA si cumple el paquete básico (reenfocada)"],
@@ -436,7 +442,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
 ["99199.26","Suplementación con sulfato ferroso + ácido fólico","Desde las 14 sem (con anemia, desde el diagnóstico). LAB correlativo; TA al completar en el puerperio"],
 ["59401.05","Suplementación con calcio","Desde las 20 sem. LAB: n.º de entrega"],
 ["99403.01","Consejería nutricional: alimentación saludable","Todas las APN"],
-["99402.01","Consejería en signos de alarma","Todas las APN. El SIHCE la muestra con LAB 1"],
+["99402.01","Consejería en signos de alarma","Todas las APN. Se numera (LAB 1, 2, 3…)"],
 ["99402.03","Consejería en salud sexual y reproductiva","1.ª APN"],
 ["99401.02","Consejería en lactancia materna","1.ª: 25–32 sem; 2.ª: 33–36; 3.ª: 37–40; 4.ª puerperio inmediato; 5.ª control de puerperio"],
 ["81000.02","Tamizaje de bacteriuria asintomática (tira reactiva)","Todas las APN. LAB RN / RP"],
@@ -464,7 +470,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
 ["59020","Test estresante",""],
 ["99412.01","Estimulación prenatal","Sesiones 1–6"],
 ["99412.02","Psicoprofilaxis obstétrica","Sesiones 1–6"],
-["90715","Vacuna dTpa","Manual 2023: una dosis entre las 27 y 36 sem. LAB G"],
+["90715","Vacuna dTpa","Una dosis entre las 20 y 36 sem. LAB G"],
 ["90714","Vacuna dT","LAB G"],
 ["90746","Vacuna hepatitis B","Desde las 20 sem; 2.ª al mes, 3.ª al mes de la 2.ª. LAB G"],
 ["90658","Vacuna influenza","LAB G (también 90688)"],
@@ -546,7 +552,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
   /* ---------- valores de ejemplo ---------- */
   const hoy = new Date(); hoy.setHours(12,0,0,0);
   $('f_fecha').value = iso(hoy);
-  $('f_fur').value = iso(new Date(hoy.getTime()-184*DAY)); // 26 sem 2 d
+  $('f_fur').value = iso(new Date(hoy.getTime()-72*DAY)); // 10 sem 2 d
 
   /* ---------- cálculos clínicos ---------- */
   function edadGestacional(){
@@ -589,8 +595,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
   /* ---------- motor de reglas ---------- */
   function build(){
     const s = {
-      apn: Math.max(1, Math.round(num('f_apn')||1)), edad: num('f_edad'), cod: $('f_cod').value, riesgo: $('f_riesgo').checked,
-      tamSel: $('f_tam').value, vihSel: $('f_vih').value, hvb: $('f_hvb').checked, ta: $('f_ta').checked, sup: num('f_sup'), cal: num('f_cal'),
+      apn: Math.max(1, Math.round(num('f_apn')||1)), edad: num('f_edad'), 
+      tamSel: $('f_tam').value, vihSel: $('f_vih').value, hvb: $('f_hvb').checked, ta: $('f_ta').checked, af: num('f_af'), sup: num('f_sup'), cal: num('f_cal'),
       pp: num('f_pp'), talla: num('f_talla'), peso: num('f_peso'),
       hb: num('f_hb'), alt: num('f_alt'), fac: num('f_fac'), anprev: $('f_anprev').checked,
       mult: $('f_mult').checked, gprev: $('f_gprev').value, viol: $('f_viol').checked, itu: $('f_itu').checked, dtpa: $('f_dtpa').checked, pap: $('f_pap').checked,
@@ -628,7 +634,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
     /* Dónde y quién */
     const noAPN = s.perfil==='tec' || s.perfil==='enf';
     if(noAPN){
-      const zf = (s.cod==='red' || s.riesgo) ? 'Z359' : 'Z349';
+      const zf = 'Z359';
       add('sup', zf, 'Supervisión de embarazo (actividad fuera de la APN)','D',[n, w],
         `Quien no hace la APN usa ${zf}, sin trimestre, como primer diagnóstico (MINSA 2026: los Z34x/Z35x con trimestre son solo para el control prenatal). LAB como en los ejemplos MINSA: n.º de APN y semanas.`, T);
       alert('red', `<b>La atención prenatal la hacen médico u obstetra</b> (definición operacional MINSA 2026). ${(C.obs||C.med) ? 'En este establecimiento hay obstetra o médico: coordine para que complete la APN.' : 'Este establecimiento no tiene obstetra ni médico marcado. Refiera o programe la APN en: <b>'+lista(conProf())+'</b>.'}`);
@@ -638,12 +644,12 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
     if(!hayLab) alert('blue', `Sin laboratorio: Hb con hemoglobinómetro (85018.01), tira reactiva y pruebas rápidas sí se hacen aquí si hay insumos. La batería se refiere a: <b>${lista(conLab())}</b>, y la registra el establecimiento que la procesa.`);
 
     /* Supervisión */
-    const conRiesgo = s.cod==='red' || s.riesgo;
+    const conRiesgo = true;
     const sup = (conRiesgo ? 'Z359' : 'Z349') + tri;
     const reenf = s.ta && n >= 6;
     const A = {req:'A'};
-    add('sup', sup, `Supervisión de embarazo ${conRiesgo?'con riesgo':'normal'}, ${triTxt}`, 'D', reenf ? [n, w, 'TA'] : [n, w],
-      `LAB 1: n.º de APN. LAB 2: semanas.${reenf?' LAB 3: TA, gestante reenfocada (cumple el paquete básico).':''} ${s.cod==='red' ? 'Z359x en todos los casos, según las guías de la red.' : (s.riesgo ? 'Z359x porque tiene factor de riesgo (manual 2023).' : 'Z349x: embarazo sin factor de riesgo (manual 2023).')}`, A);
+    add('sup', sup, `Supervisión de embarazo, ${triTxt}`, 'D', reenf ? [n, w, 'TA'] : [n, w],
+      `LAB 1: n.º de APN. LAB 2: semanas.${reenf?' LAB 3: TA, gestante reenfocada (cumple el paquete básico).':''} Se usa Z359x en todas las gestantes: el HIS marca error con Z349x.`, A);
     if(s.ta && n < 6) alert('yellow','El LAB 3 «TA» (gestante reenfocada) solo se registra desde la 6.ª atención prenatal.');
     if(n===1) add('cons','59401.06','Plan de parto','D',[1],'1.er plan en la APN; el 2.º y 3.º en visita domiciliaria; TA en el puerperio si el parto fue institucional (plan de parto efectivo).', A);
     if(s.mult && n===1) add('dx','O309','Embarazo múltiple','D',[],'MINSA 2026: se registra en la 1.ª APN.', A);
@@ -684,7 +690,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
       stats.push({l:'Hb ajustada', v:`${hbAdj.toFixed(1)} g/dL`, s: an.anemia ? `anemia ${an.txt} (corte ${an.corte})` : `sin anemia (corte ${an.corte})`, warn: an.anemia});
     }
     if(w <= 13 && !(an && an.anemia)){
-      add('supl','99199.18','Suplementación con ácido fólico','D',[ent(s.sup)],'Hasta las 13 semanas. Son 2 entregas: LAB 1 o 2.', T);
+      add('supl','99199.18','Suplementación con ácido fólico','D',[ent(s.af)],'Hasta las 13 semanas. Son 2 entregas: LAB 1 o 2 (campo «N.º entrega ácido fólico»).', T);
     } else {
       add('supl','99199.26', an && an.anemia ? 'Sulfato ferroso + ácido fólico (tratamiento)' : 'Suplementación con sulfato ferroso + ácido fólico','D',[ent(s.sup)],
         an && an.anemia ? `Con anemia se usa este código aunque sea antes de las 14 sem. LAB: n.º de entrega (1, 2, 3…). Leve o moderada: 120 mg de hierro + 800 µg de ácido fólico al día por 6 meses${an.grado==='SEV'?'; severa: tratar y referir a mayor capacidad resolutiva':''}.` : `Desde las 14 semanas. LAB: n.º de entrega (1, 2, 3…; sigue en el puerperio y lleva TA al completar).${n===1 && w>32 ? ' Inicio después de las 32 sem: 2 tabletas diarias.' : ''}`, an && an.anemia ? A : T);
@@ -727,7 +733,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
     }
 
     /* Consejerías */
-    add('cons','99402.01','Consejería en signos de alarma','D',[],'En todas las atenciones. El manual no la numera; el SIHCE la muestra con LAB 1. Confirmar con estadística.', T);
+    add('cons','99402.01','Consejería en signos de alarma','D',[n],'En todas las atenciones. Se numera: LAB = n.º de consejería (igual al n.º de APN si se dio en cada control).', T);
     const lact = (w>=25&&w<=32) ? 1 : (w>=33&&w<=36 ? 2 : (w>=37 ? 3 : 0));
     if(lact) add('cons','99401.02',`Consejería en lactancia materna (${lact}.ª)`,'D',[lact],
       ['','Ventana de 25 a 32 sem.','Ventana de 33 a 36 sem.','Ventana de 37 a 40 sem.'][lact]+' Una sola vez por ventana (manual 2023).', T);
@@ -748,9 +754,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
     }
 
     /* Vacunas */
-    if(w >= 27 && w <= 36 && !s.dtpa) add('vac','90715','Vacuna dTpa','D',['G'],'Una dosis entre las 27 y 36 semanas (manual 2023). Lo registra quien vacuna.', T);
-    if(w >= 20 && w < 27 && !s.dtpa) alert('blue','dTpa: el manual 2023 la indica entre las 27 y 36 semanas; las guías de la red dicen desde las 20. Confirme con Inmunizaciones.');
-    if(w > 36 && !s.dtpa) alert('yellow','No se registró dTpa en la gestación y ya pasó la ventana de 27 a 36 semanas.');
+    if(w >= 20 && w <= 36 && !s.dtpa) add('vac','90715','Vacuna dTpa','D',['G'],'Una dosis entre las 20 y 36 semanas (esquema nacional de vacunación). Lo registra quien vacuna.', T);
+    if(w > 36 && !s.dtpa) alert('yellow','No se registró dTpa en la gestación y ya pasó la ventana de 20 a 36 semanas.');
     if(w >= 20 && !s.hvb) add('vac','90746','Vacuna contra hepatitis B','D',['G'],'Desde las 20 semanas: 1.ª dosis, 2.ª al mes y 3.ª al mes de la 2.ª. Lo registra quien vacuna.', T);
 
     /* Alertas de gestión */
@@ -865,8 +870,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
     const eess = $('f_eess').value, perf = $('f_perfil').value, C = CFG[eess]||{}, hayLab = !!C.lab;
     if($('p_fac').value==='' && C.fac!=null) $('p_fac').value = C.fac;
     $('pQuien').textContent = `${nombre(eess)} · ${{obs:'Obstetra',med:'Médico(a)',enf:'Enfermero(a)',tec:'Técnico(a) de salud'}[perf]}`;
-    const tipo = $('p_tipo').value, ces = $('p_parto').value==='c', inst = $('p_inst').checked, comp = $('p_comp').checked;
-    const supN = $('p_sup').value || 'n.º', hb = parseFloat($('p_hb').value), fac = parseFloat($('p_fac').value)||0, anprev = $('p_anprev').checked;
+    const tipo = $('p_tipo').value, ces = $('p_parto').value==='c', inst = $('p_inst').checked, fe1 = $('p_fe1').checked;
+    const hb = parseFloat($('p_hb').value), fac = parseFloat($('p_fac').value)||0, anprev = $('p_anprev').checked;
     const rows = [], alerts = [];
     const add = (g,code,name,tipo,lab,why,req='T') => rows.push({g,code,name,tipo,lab:[].concat(lab).filter(x=>x!==null&&x!==''),why,req});
     const alert = (c,h) => alerts.push({c,h});
@@ -878,8 +883,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px;
     } else {
       const k = tipo==='c1' ? 1 : 2;
       add('sup','59430','Atención postparto: control de puérpera','D',[k], `${k}.º control de puerperio. Lo hacen médico u obstetra (MINSA 2026).`, 'A');
-      add('supl','99199.26','Suplementación con sulfato ferroso + ácido fólico','D',[comp ? 'TA' : supN],
-        comp ? 'TA: completó las 30 tabletas del puerperio (gestante suplementada con 210 tabletas).' : 'LAB: n.º de entrega, sigue la numeración de la gestación. TA cuando completa las 30 tabletas.');
+      if(k===1 || !fe1) add('supl','99199.26','Suplementación con sulfato ferroso + ácido fólico','D',['TA'],
+        'TA: en el puerperio se entregan de una vez las 30 tabletas (hasta los 30 días después del parto) y con eso la gestante queda suplementada (60 de ácido fólico + 180 + 30 de hierro, MINSA 2026).');
       add('cons','99403.01','Consejería nutricional','D',[],'Acompaña a la suplementación. LAB en blanco.');
       if(k===1){
         add('cons','99401.02','Consejería en lactancia materna (5.ª)','D',[5],'5.ª consejería: control de puerperio en consulta externa.');
